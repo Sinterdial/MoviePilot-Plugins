@@ -15,7 +15,7 @@ from app.plugins import _PluginBase
 from app.schemas import MediaType
 
 
-class ShortCut(_PluginBase):
+class ShortCutModified(_PluginBase):
     # 插件名称
     plugin_name = "快捷指令"
     # 插件描述
