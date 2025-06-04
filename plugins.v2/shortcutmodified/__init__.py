@@ -23,7 +23,7 @@ class ShortCutModified(_PluginBase):
     # 插件图标
     plugin_icon = "https://raw.githubusercontent.com/Sinterdial/MoviePilot-Plugins/main/icons/shortcut.png"
     # 插件版本
-    plugin_version = "1.6"
+    plugin_version = "1.6.1"
     # 插件作者
     plugin_author = "Sinterdial"
     # 作者主页
