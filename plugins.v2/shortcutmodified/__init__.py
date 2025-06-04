@@ -23,7 +23,7 @@ class ShortCutModified(_PluginBase):
     # 插件图标
     plugin_icon = "https://raw.githubusercontent.com/Sinterdial/MoviePilot-Plugins/main/icons/shortcut.png"
     # 插件版本
-    plugin_version = "1.6.2"
+    plugin_version = "1.6.3"
     # 插件作者
     plugin_author = "Sinterdial"
     # 作者主页
@@ -114,7 +114,7 @@ class ShortCutModified(_PluginBase):
 
     def subscribe(self, title: str, tmdbid: str, type: str = "电视剧", season_to_subscribe: int = 1, plugin_key: str = "") -> Any:
         """
-        添加订阅订阅
+        添加订阅
         """
         if self._plugin_key != plugin_key:
             msg = f"plugin_key错误：{plugin_key}"
@@ -122,11 +122,12 @@ class ShortCutModified(_PluginBase):
             return msg
         # 元数据
         meta = MetaInfo(title=title)
+
         meta.tmdbid = tmdbid
         mediainfo: MediaInfo = self.chain.recognize_media(meta=meta, tmdbid=tmdbid,
                                                           mtype=MediaType(type))
         if not mediainfo:
-            msg = f'未识别到媒体信息，标题：{title}，tmdb_id：{tmdbid}'
+            msg = f'未识别到媒体信息，标题：{title}，tmdb_id：{tmdbid}，季数: {season_to_subscribe}'
             logger.warn(msg)
             return msg
 
@@ -137,6 +138,9 @@ class ShortCutModified(_PluginBase):
             logger.info(msg)
             return msg
         # 判断用户是否已经添加订阅
+        # 标记订阅季数
+        meta.begin_season = season_to_subscribe
+
         if self.subscribechain.exists(mediainfo=mediainfo, meta=meta):
             msg = f'{mediainfo.title_year} 订阅已存在'
             logger.info(msg)
@@ -149,10 +153,78 @@ class ShortCutModified(_PluginBase):
                                            season=season_to_subscribe,
                                            exist_ok=True,
                                            username="快捷指令")
+
+        # 转化季数为大写
+        season_info = "第" + self.number_to_chinese(season_to_subscribe)+ "季"
         if not msg:
-            return f"{mediainfo.title_year} 订阅成功"
+            return f"{mediainfo.title_year} {season_info} 订阅成功"
         else:
             return msg
+
+    def number_to_chinese(num: int) -> str:
+        """
+        将阿拉伯数字转换为中文大写数字表示
+        
+        支持将整数转换为对应的中文字符表达，包括零、一到九的基础数字，
+        以及十、百、千、万、亿等单位组合。适用于需要将数字以中文形式展示的场景。
+        
+        参数:
+            num (int): 需要转换的整数
+            
+        返回:
+            str: 转换后的中文大写数字字符串
+            
+        示例:
+            输入: 1234
+            输出: "一千二百三十四"
+        """
+        if num == 0:
+            return "零"
+
+        # 定义基础数字和单位
+        digits = ["", "一", "二", "三", "四", "五", "六", "七", "八", "九"]
+        units = ["", "十", "百", "千"]       # 十进制单位
+        large_units = ["", "万", "亿", "万亿"]  # 大单位
+
+        def chunk(number: int) -> str:
+            """
+            将小于10000的数字分解并转换为中文表示
+            
+            参数:
+                number (int): 小于10000的整数
+                
+            返回:
+                str: 中文表示的字符串片段
+            """
+            res = ""
+            count = 0
+            while number > 0:
+                digit = number % 10
+                if digit != 0:
+                    res = digits[digit] + units[count] + res
+                else:
+                    # 处理连续的零，避免出现多个“零”
+                    if res and res[0] != '零':
+                        res = '零' + res
+                number //= 10
+                count += 1
+            return res
+
+        result = ""
+        chunk_index = 0
+        while num > 0:
+            part = num % 10000
+            if part != 0:
+                # 对每个不超过10000的部分进行处理，并加上对应的大单位
+                result = chunk(part) + large_units[chunk_index] + result
+            num //= 10000
+            chunk_index += 1
+
+        # 特殊情况处理，如"一十"应简化为"十"
+        if result.startswith("一十"):
+            result = result[1:]
+
+        return result
 
     @cached(TTLCache(maxsize=100, ttl=300))
     def torrents(self, tmdbid: int, type: str = None, area: str = "title",
@@ -329,7 +401,7 @@ class ShortCutModified(_PluginBase):
                                         'props': {
                                             'type': 'info',
                                             'variant': 'tonal',
-                                            'text': '感谢Nest的想法。更新于 2024/4/25 安装完插件需要重启MoviePilot（1.8.3+） 推荐使用只有订阅功能的快捷指令，按需选择。'
+                                            'text': '感谢Nest的想法和honue的原始代码。更新于 2025/6/4 安装完插件需要重启MoviePilot（1.8.3+） 只有订阅功能的快捷指令，暂无下载快捷指令。'
                                         }
                                     }
                                 ]
