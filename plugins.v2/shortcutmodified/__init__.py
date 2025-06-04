@@ -127,7 +127,7 @@ class ShortCutModified(_PluginBase):
         else:
             return "未识别到季数相关信息"
 
-    def subscribe(self, title: str, tmdbid: str, type: str = "电视剧", seasons_str_decoded: str = "第一季", plugin_key: str = "") -> Any:
+    def subscribe(self, title: str, tmdbid: str, type: str = "电视剧", seasons_str_encoded: str = "第一季", plugin_key: str = "") -> Any:
         """
         添加订阅
         """
@@ -152,7 +152,7 @@ class ShortCutModified(_PluginBase):
         #     seasons_str = [1]
 
         # 分解要订阅的季数
-        seasons_str = seasons_str_decoded.split(",")
+        seasons_str = seasons_str_encoded.split(",")
 
         meta.tmdbid = tmdbid
         mediainfo: MediaInfo = self.chain.recognize_media(meta=meta, tmdbid=tmdbid,
