@@ -8,7 +8,7 @@
         "author": "Sinterdial",
         "level": 1,
         "history": {
-            "v1.6.1": 修复bug
+            "v1.6.1": 修复bug，
             "v1.6": "在原版基础上增加选择要订阅哪几季的功能"
         }
     }
