@@ -3,11 +3,12 @@
         "name": "修改版快捷指令",
         "description": "IOS快捷指令，快速选片添加订阅。",
         "labels": "站点,仪表板",
-        "version": "1.6.1",
+        "version": "1.6.2",
         "icon": "https://raw.githubusercontent.com/Sinterdial/MoviePilot-Plugins/main/icons/shortcut.png",
         "author": "Sinterdial",
         "level": 1,
         "history": {
+            "v1.6.2": "修复bug",
             "v1.6.1": "修复bug",
             "v1.6": "在原版基础上增加选择要订阅哪几季的功能"
         }
