@@ -1,4 +1,6 @@
 from typing import List, Tuple, Dict, Any
+from urllib.parse import unquote
+import json
 
 from cachetools import cached, TTLCache
 
@@ -125,7 +127,7 @@ class ShortCutModified(_PluginBase):
         else:
             return "未识别到季数相关信息"
 
-    def subscribe(self, title: str, tmdbid: str, type: str = "电视剧", seasons_str: tuple[str] = "第一季", plugin_key: str = "") -> Any:
+    def subscribe(self, title: str, tmdbid: str, type: str = "电视剧", seasons_str_encoded: str = "第一季", plugin_key: str = "") -> Any:
         """
         添加订阅
         """
@@ -135,6 +137,13 @@ class ShortCutModified(_PluginBase):
             return msg
         # 元数据
         meta = MetaInfo(title=title)
+
+        # 解码url参数
+        if seasons_str_encoded != "第一季":
+            seasons_str_decoded = unquote(seasons_str_encoded)
+            seasons_str = json.loads(seasons_str_decoded)  # 转换回列表
+            log_msg = f"接收到的参数：{seasons_str_encoded}, 解码后的参数：{seasons_str_decoded}, 转换后的列表：{seasons_str}"
+            logger.info(log_msg)
 
         meta.tmdbid = tmdbid
         mediainfo: MediaInfo = self.chain.recognize_media(meta=meta, tmdbid=tmdbid,
