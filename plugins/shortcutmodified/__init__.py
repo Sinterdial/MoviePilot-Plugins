@@ -21,7 +21,7 @@ class ShortCut(_PluginBase):
     # 插件描述
     plugin_desc = "IOS快捷指令，快速选片添加订阅"
     # 插件图标
-    plugin_icon = "https://github.com/Sinterdial/MoviePilot-Plugins/blob/68b3fb7a5398e9dc1dfc24084bba8d09ea8b8303/icons/shortcut.png"
+    plugin_icon = "https://raw.githubusercontent.com/Sinterdial/MoviePilot-Plugins/main/icons/shortcut.png"
     # 插件版本
     plugin_version = "1.6"
     # 插件作者
