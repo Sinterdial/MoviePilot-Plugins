@@ -23,7 +23,7 @@ class ShortCutModified(_PluginBase):
     # 插件图标
     plugin_icon = "https://raw.githubusercontent.com/Sinterdial/MoviePilot-Plugins/main/icons/shortcut.png"
     # 插件版本
-    plugin_version = "1.6.1"
+    plugin_version = "1.6.2"
     # 插件作者
     plugin_author = "Sinterdial"
     # 作者主页
@@ -108,7 +108,7 @@ class ShortCutModified(_PluginBase):
         # 创建季列表
         seasons_list = list(range(1, mediainfo.number_of_seasons + 1))
         if seasons_list:
-            return f"{mediainfo.title_year} 订阅成功"
+            return seasons_list
         else:
             return "未找到季数相关信息"
 
