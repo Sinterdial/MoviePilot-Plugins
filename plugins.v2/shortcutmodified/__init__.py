@@ -189,19 +189,19 @@ class ShortCutModified(_PluginBase):
                 # 依次订阅剧集
                 for season_to_subscribe in seasons_to_subscribe:
                     # 标记订阅季数
-                    mediainfo.season = season_to_subscribe
+                    mediainfo.season = int(season_to_subscribe)
 
                     # 添加订阅
                     sid, msg = self.subscribechain.add(title=mediainfo.title,
                                                        year=mediainfo.year,
                                                        mtype=mediainfo.type,
                                                        tmdbid=mediainfo.tmdb_id,
-                                                       season=season_to_subscribe,
+                                                       season=int(season_to_subscribe),
                                                        exist_ok=True,
                                                        username="快捷指令")
 
                     if not msg:
-                        seasons_subscribed.append(self.number_to_chinese(season_to_subscribe))
+                        seasons_subscribed.append(self.number_to_chinese(int(season_to_subscribe)))
                     else:
                         return msg
 
