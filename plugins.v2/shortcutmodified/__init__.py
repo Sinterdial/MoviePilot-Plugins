@@ -107,7 +107,7 @@ class ShortCutModified(_PluginBase):
 
         # 创建季列表
         seasons_list = list(range(1, mediainfo.number_of_seasons + 1))
-        if not seasons_list:
+        if seasons_list:
             return f"{mediainfo.title_year} 订阅成功"
         else:
             return "未找到季数相关信息"
