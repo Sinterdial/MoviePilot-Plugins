@@ -23,7 +23,7 @@ class ShortCutModified(_PluginBase):
     # 插件图标
     plugin_icon = "https://raw.githubusercontent.com/Sinterdial/MoviePilot-Plugins/main/icons/shortcut.png"
     # 插件版本
-    plugin_version = "1.6.5"
+    plugin_version = "1.6.6"
     # 插件作者
     plugin_author = "Sinterdial"
     # 作者主页
@@ -93,28 +93,39 @@ class ShortCutModified(_PluginBase):
             logger.warn(msg)
             return msg
 
-        # 查询缺失的媒体信息
-        exist_flag, _ = self.downloadchain.get_no_exists_info(meta=meta, mediainfo=mediainfo)
-        if exist_flag:
-            msg = f'{mediainfo.title_year} 媒体库中已存在'
-            logger.info(msg)
-            return msg
-        # 判断用户是否已经添加订阅
-        if self.subscribechain.exists(mediainfo=mediainfo, meta=meta):
-            msg = f'{mediainfo.title_year} 订阅已存在'
-            logger.info(msg)
-            return msg
-
         # 创建季列表
         seasons_list = list(range(1, mediainfo.number_of_seasons + 1))
         seasons_info = [self.number_to_chinese(season) for season in seasons_list]
-        seasons_list_str = [f"第 {season_info} 季" for season_info in seasons_info]
-        if seasons_list_str:
+        seasons_list_str = [f"第{season_info}季" for season_info in seasons_info]
+        exits_season_num = 0
+
+        # 查询缺失的媒体信息
+        for index, season in enumerate(seasons_list):
+            # 标记订阅季数
+            meta.begin_season = season
+            mediainfo.season = season
+
+            exist_flag, _ = self.downloadchain.get_no_exists_info(meta=meta, mediainfo=mediainfo)
+            if exist_flag:
+                msg = f'媒体库中已存在 {mediainfo.title_year} {seasons_list_str[index]} '
+                logger.info(msg)
+                seasons_list_str[index] += "（已入库，请勿重复选择）"
+                exits_season_num += 1
+            # 判断用户是否已经添加订阅
+            if self.subscribechain.exists(mediainfo=mediainfo, meta=meta):
+                msg = f'{mediainfo.title_year} 订阅已存在'
+                logger.info(msg)
+                seasons_list_str[index] += "（已订阅，请勿重复选择）"
+                exits_season_num += 1
+
+        if exits_season_num == len(seasons_list):
+            return f'已入库/订阅剧集 {mediainfo.title_year} 的所有季'
+        elif seasons_list_str:
             return seasons_list_str
         else:
-            return "未找到季数相关信息"
+            return "未识别到季数相关信息"
 
-    def subscribe(self, title: str, tmdbid: str, type: str = "电视剧", seasons_str: list[str] = ["第一季"], plugin_key: str = "") -> Any:
+    def subscribe(self, title: str, tmdbid: str, type: str = "电视剧", seasons_str: tuple[str] = "第一季", plugin_key: str = "") -> Any:
         """
         添加订阅
         """
@@ -133,22 +144,61 @@ class ShortCutModified(_PluginBase):
             logger.warn(msg)
             return msg
 
-        # 查询缺失的媒体信息
-        exist_flag, _ = self.downloadchain.get_no_exists_info(meta=meta, mediainfo=mediainfo)
-        if exist_flag:
-            msg = f'{mediainfo.title_year} 媒体库中已存在'
-            logger.info(msg)
-            return msg
+        # 判断是否为剧集
+        if type == "电视剧":
+            # 转化季信息到阿拉伯数字
+            seasons_to_subscribe = [self.chinese_to_number(season_info) for season_info in seasons_str]
+            # 记录已订阅季数
+            seasons_subscribed = []
 
-        # 转化季信息到阿拉伯数字
-        seasons_to_subscribe = [self.chinese_to_number(season_info) for season_info in seasons_str]
-        # 记录已订阅季数
-        seasons_subscribed = []
-        # 判断用户是否已经添加订阅
-        for season_to_subscribe in seasons_to_subscribe:
-            # 标记订阅季数
-            meta.begin_season = season_to_subscribe
+            if len(seasons_to_subscribe) == 1:
+                # 标记订阅季数
+                meta.begin_season = seasons_to_subscribe[0]
+                mediainfo.season = seasons_to_subscribe[0]
 
+                exist_flag, _ = self.downloadchain.get_no_exists_info(meta=meta, mediainfo=mediainfo)
+                if exist_flag:
+                    msg = f'媒体库中已存在 {mediainfo.title_year} {seasons_to_subscribe[0]}'
+                    logger.info(msg)
+                    return msg
+                # 查询订阅是否存在
+                if self.subscribechain.exists(mediainfo=mediainfo, meta=meta):
+                    msg = f'{mediainfo.title_year} {seasons_to_subscribe[0]} 订阅已存在'
+                    logger.info(msg)
+                    return msg
+
+            # 判断用户是否已经添加订阅
+            for season_to_subscribe in seasons_to_subscribe:
+                # 标记订阅季数
+                meta.begin_season = season_to_subscribe
+                mediainfo.season = season_to_subscribe
+
+                # 添加订阅
+                sid, msg = self.subscribechain.add(title=mediainfo.title,
+                                                   year=mediainfo.year,
+                                                   mtype=mediainfo.type,
+                                                   tmdbid=mediainfo.tmdb_id,
+                                                   season=season_to_subscribe,
+                                                   exist_ok=True,
+                                                   username="快捷指令")
+
+                if not msg:
+                    seasons_subscribed.append(self.number_to_chinese(season_to_subscribe))
+                else:
+                    return msg
+
+            # 拼接成功订阅的信息并返回
+            subscribed_info = mediainfo.title_year  + "第" + "、".join(seasons_subscribed) + "季订阅成功！"
+            return subscribed_info
+        # 如果是电影，则不考虑季相关问题
+        else:
+            # 查询缺失的媒体信息
+            exist_flag, _ = self.downloadchain.get_no_exists_info(meta=meta, mediainfo=mediainfo)
+            if exist_flag:
+                msg = f'媒体库中已存在 {mediainfo.title_year}'
+                logger.info(msg)
+                return msg
+            # 查询订阅是否存在
             if self.subscribechain.exists(mediainfo=mediainfo, meta=meta):
                 msg = f'{mediainfo.title_year} 订阅已存在'
                 logger.info(msg)
@@ -158,19 +208,12 @@ class ShortCutModified(_PluginBase):
                                                year=mediainfo.year,
                                                mtype=mediainfo.type,
                                                tmdbid=mediainfo.tmdb_id,
-                                               season=season_to_subscribe,
                                                exist_ok=True,
                                                username="快捷指令")
-
             if not msg:
-                seasons_subscribed.append(self.number_to_chinese(season_to_subscribe))
+                return f"{mediainfo.title_year} 订阅成功"
             else:
                 return msg
-
-        # 拼接成功订阅的信息并返回
-        if  seasons_subscribed:
-            subscribed_info = mediainfo.title_year  + "第 " + "、".join(seasons_subscribed) + " 季订阅成功！"
-            return subscribed_info
 
     @cached(TTLCache(maxsize=100, ttl=300))
     def torrents(self, tmdbid: int, type: str = None, area: str = "title",
@@ -246,7 +289,7 @@ class ShortCutModified(_PluginBase):
                 "summary": "模糊搜索",
                 "description": "模糊搜索",
             }, {
-                "path": "/getSeasonsList",
+                "path": "/getseasonslist",
                 "endpoint": self.get_seasons_list,
                 "methods": ["GET"],
                 "summary": "查询剧集季信息",
