@@ -25,7 +25,7 @@ class ShortCutModified(_PluginBase):
     # 插件图标
     plugin_icon = "https://raw.githubusercontent.com/Sinterdial/MoviePilot-Plugins/main/icons/shortcut.png"
     # 插件版本
-    plugin_version = "1.6.6"
+    plugin_version = "1.6.7"
     # 插件作者
     plugin_author = "Sinterdial"
     # 作者主页
@@ -121,7 +121,7 @@ class ShortCutModified(_PluginBase):
                 exits_season_num += 1
 
         if exits_season_num == len(seasons_list):
-            return f'已入库/订阅剧集 {mediainfo.title_year} 的所有季'
+            return f'已入库/订阅剧集 {mediainfo.title_year} 的所有季，请勿重复订阅'
         elif seasons_list_str:
             return seasons_list_str
         else:
@@ -205,7 +205,7 @@ class ShortCutModified(_PluginBase):
                     return msg
 
             # 拼接成功订阅的信息并返回
-            subscribed_info = mediainfo.title_year  + "第" + "、".join(seasons_subscribed) + "季订阅成功！"
+            subscribed_info = mediainfo.title_year  + " 第" + "、".join(seasons_subscribed) + "季订阅成功！"
             return subscribed_info
         # 如果是电影，则不考虑季相关问题
         else:
@@ -541,7 +541,7 @@ class ShortCutModified(_PluginBase):
                                         'props': {
                                             'type': 'info',
                                             'variant': 'tonal',
-                                            'text': '包含订阅和下载，快捷指令：https://www.icloud.com/shortcuts/467c61e122814fb3b910701c0ce276cc'
+                                            'text': '包含订阅和下载，快捷指令：https://www.icloud.com/shortcuts/d6df3b5f4ab24e75a73d99eed899d208'
                                         }
                                     }
                                 ]
@@ -556,7 +556,7 @@ class ShortCutModified(_PluginBase):
                                         'props': {
                                             'type': 'info',
                                             'variant': 'tonal',
-                                            'text': '只有订阅功能，快捷指令：https://www.icloud.com/shortcuts/359d70d2fe554388a2efcdd9929a033b'
+                                            'text': '只有订阅功能，暂无下载快捷指令'
                                         }
                                     }
                                 ]
