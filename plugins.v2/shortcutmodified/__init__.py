@@ -164,11 +164,8 @@ class ShortCutModified(_PluginBase):
 
         # 判断是否为剧集
         if type == "电视剧":
-            # # 转化季信息到阿拉伯数字
-            # seasons_to_subscribe = [self.chinese_to_number(season_info) for season_info in seasons_str]
-
-            # 调试
-            seasons_to_subscribe = [8]
+            # 转化季信息到阿拉伯数字
+            seasons_to_subscribe = [self.chinese_to_number(season_info) for season_info in seasons_str]
             # 记录已订阅季数
             seasons_subscribed = []
 
