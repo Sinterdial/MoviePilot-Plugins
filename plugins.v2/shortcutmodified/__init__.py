@@ -1,6 +1,4 @@
 from typing import List, Tuple, Dict, Any
-from urllib.parse import unquote
-import json
 
 from cachetools import cached, TTLCache
 
@@ -140,16 +138,6 @@ class ShortCutModified(_PluginBase):
 
         log_msg = f"接收到的参数seasons：{seasons_str_encoded},接收到的参数type：{type}"
         logger.info(log_msg)
-
-        # # 解码url参数
-        # seasons_str = []
-        # if seasons_str_encoded != "第一季":
-        #     seasons_str_decoded = unquote(seasons_str_encoded)
-        #     seasons_str = json.loads(seasons_str_decoded)  # 转换回列表
-        #     log_msg = f"解码后的参数：{seasons_str_decoded}, 转换后的列表：{seasons_str}"
-        #     logger.info(log_msg)
-        # else:
-        #     seasons_str = [1]
 
         # 分解要订阅的季数
         seasons_str = seasons_str_encoded.split(",")
