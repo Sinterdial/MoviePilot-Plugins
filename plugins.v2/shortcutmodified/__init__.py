@@ -163,77 +163,77 @@ class ShortCutModified(_PluginBase):
             return msg
 
         # 判断是否为剧集
-        try:
-            if type == "电视剧":
-                # 转化季信息到阿拉伯数字
-                seasons_to_subscribe = [self.chinese_to_number(season_info) for season_info in seasons_str]
-                # 记录已订阅季数
-                seasons_subscribed = []
+        if type == "电视剧":
+            # # 转化季信息到阿拉伯数字
+            # seasons_to_subscribe = [self.chinese_to_number(season_info) for season_info in seasons_str]
 
-                if len(seasons_to_subscribe) == 1:
-                    # 标记订阅季数
-                    meta.begin_season = seasons_to_subscribe[0]
-                    mediainfo.season = seasons_to_subscribe[0]
+            # 调试
+            seasons_to_subscribe = [8]
+            # 记录已订阅季数
+            seasons_subscribed = []
 
-                    exist_flag, _ = self.downloadchain.get_no_exists_info(meta=meta, mediainfo=mediainfo)
-                    if exist_flag:
-                        msg = f'媒体库中已存在 {mediainfo.title_year} {seasons_to_subscribe[0]}'
-                        logger.info(msg)
-                        return msg
-                    # 查询订阅是否存在
-                    if self.subscribechain.exists(mediainfo=mediainfo, meta=meta):
-                        msg = f'{mediainfo.title_year} {seasons_to_subscribe[0]} 订阅已存在'
-                        logger.info(msg)
-                        return msg
+            if len(seasons_to_subscribe) == 1:
+                # 标记订阅季数
+                meta.begin_season = seasons_to_subscribe[0]
+                mediainfo.season = seasons_to_subscribe[0]
 
-                # 依次订阅剧集
-                for season_to_subscribe in seasons_to_subscribe:
-                    # 标记订阅季数
-                    mediainfo.season = int(season_to_subscribe)
-
-                    # 添加订阅
-                    sid, msg = self.subscribechain.add(title=mediainfo.title,
-                                                       year=mediainfo.year,
-                                                       mtype=mediainfo.type,
-                                                       tmdbid=mediainfo.tmdb_id,
-                                                       season=int(season_to_subscribe),
-                                                       exist_ok=True,
-                                                       username="快捷指令")
-
-                    if not msg:
-                        seasons_subscribed.append(self.number_to_chinese(int(season_to_subscribe)))
-                    else:
-                        return msg
-
-                # 拼接成功订阅的信息并返回
-                subscribed_info = mediainfo.title_year  + "第" + "、".join(seasons_subscribed) + "季订阅成功！"
-                return subscribed_info
-            # 如果是电影，则不考虑季相关问题
-            else:
-                # 查询缺失的媒体信息
                 exist_flag, _ = self.downloadchain.get_no_exists_info(meta=meta, mediainfo=mediainfo)
                 if exist_flag:
-                    msg = f'媒体库中已存在 {mediainfo.title_year}'
+                    msg = f'媒体库中已存在 {mediainfo.title_year} {seasons_to_subscribe[0]}'
                     logger.info(msg)
                     return msg
                 # 查询订阅是否存在
                 if self.subscribechain.exists(mediainfo=mediainfo, meta=meta):
-                    msg = f'{mediainfo.title_year} 订阅已存在'
+                    msg = f'{mediainfo.title_year} {seasons_to_subscribe[0]} 订阅已存在'
                     logger.info(msg)
                     return msg
+
+            # 依次订阅剧集
+            for season_to_subscribe in seasons_to_subscribe:
+                # 标记订阅季数
+                mediainfo.season = season_to_subscribe
+
                 # 添加订阅
                 sid, msg = self.subscribechain.add(title=mediainfo.title,
                                                    year=mediainfo.year,
                                                    mtype=mediainfo.type,
                                                    tmdbid=mediainfo.tmdb_id,
+                                                   season=season_to_subscribe,
                                                    exist_ok=True,
                                                    username="快捷指令")
+
                 if not msg:
-                    return f"{mediainfo.title_year} 订阅成功"
+                    seasons_subscribed.append(self.number_to_chinese(season_to_subscribe))
                 else:
                     return msg
-        except Exception as e:
-            logger.error(e)
+
+            # 拼接成功订阅的信息并返回
+            subscribed_info = mediainfo.title_year  + "第" + "、".join(seasons_subscribed) + "季订阅成功！"
+            return subscribed_info
+        # 如果是电影，则不考虑季相关问题
+        else:
+            # 查询缺失的媒体信息
+            exist_flag, _ = self.downloadchain.get_no_exists_info(meta=meta, mediainfo=mediainfo)
+            if exist_flag:
+                msg = f'媒体库中已存在 {mediainfo.title_year}'
+                logger.info(msg)
+                return msg
+            # 查询订阅是否存在
+            if self.subscribechain.exists(mediainfo=mediainfo, meta=meta):
+                msg = f'{mediainfo.title_year} 订阅已存在'
+                logger.info(msg)
+                return msg
+            # 添加订阅
+            sid, msg = self.subscribechain.add(title=mediainfo.title,
+                                               year=mediainfo.year,
+                                               mtype=mediainfo.type,
+                                               tmdbid=mediainfo.tmdb_id,
+                                               exist_ok=True,
+                                               username="快捷指令")
+            if not msg:
+                return f"{mediainfo.title_year} 订阅成功"
+            else:
+                return msg
 
 
 
