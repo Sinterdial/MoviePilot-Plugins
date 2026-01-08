@@ -19,12 +19,12 @@
         }
     }
     "AutoSports": {
-      "name": "Sportscult 比赛自动下载及简单刮削",
-      "description": "根据设置的球队名自动下载最新比赛，进行文件整理及简单的刮削",
-      "labels": "站点",
-      "version": "0.1.0",
-      "icon": "world.png",
-      "author": "Sinterdial",
-      "level": 2
-  }
+        "name": "Sportscult 比赛自动下载及简单刮削",
+        "description": "根据设置的球队名自动下载最新比赛，进行文件整理及简单的刮削",
+        "labels": "站点",
+        "version": "0.1.0",
+        "icon": "world.png",
+        "author": "Sinterdial",
+        "level": 2
+    }
 }
