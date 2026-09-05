@@ -1,13 +1,6 @@
-# MoviePilot-Plugins
-MoviePilot官方插件市场：https://github.com/jxxghp/MoviePilot-Plugins
-
-## 目录
-- [1. Sportscult 比赛自动下载及简单刮削](#1-Sportscult比赛自动下载及简单刮削)
-- [2. ios快捷指令添加订阅修改版](#2-IOS快捷指令添加订阅修改版)
-
 ## 插件介绍
 
-### 1. Sportscult 比赛自动下载及简单刮削【更新中】
+### Sportscult 比赛自动下载及简单刮削【更新中】
 [插件目录](./plugins.v2/autosports)
   #### **如何使用**：
   1. 站点索引器：
@@ -48,11 +41,3 @@ MoviePilot官方插件市场：https://github.com/jxxghp/MoviePilot-Plugins
     3. Sportscult 站点种子命名千奇百怪，只能手动添加识别词解决，目前版本对西班牙的赛事体系的精调较为完善
     4. 在检测已入库比赛信息时，需要对整个设置的转移目录进行扫描，可能对含有大量文件的目录性能不佳，请谨慎使用
     5. 一生只爱一支球队，该插件只支持同时订阅一支球队（但可以设置多个搜索关键词）。底层原因是检测已入库比赛信息时是通过赛事名+赛季+轮次来判断的，无法区分同一赛事的同一轮的多场比赛
-
-### 2. IOS快捷指令添加订阅修改版【仅维护】
-[插件目录](./plugins.v2/shortcutmodified)
-  - 在[原作者](https://github.com/honue/MoviePilot-Plugins)的基础上做了现版本 MP 的适配
-  - 添加了一些小功能，增强易读性
-  - 使用时，plugin_key需要与moviepilot系统apikey保持一致
-  - 暂不支持下载功能，有需求的话再加上
-  - 快捷指令[下载链接](https://www.icloud.com/shortcuts/f7805a73c25c427baed53663b0d777f7)，导入后请按指示操作
